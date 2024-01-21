@@ -16,6 +16,38 @@
   bibliography-file: "refs.bib",
 )
 
+#term(
+  ps1: [`$`],
+  input: [`ls -la`],
+  output: [
+  `total 140
+drwxr-xr-x. 1 null null    48 Nov 30 01:11 .
+drwx------. 1 null null  1032 Dec  3 18:30 ..
+-rw-r--r--. 1 null null 23093 Nov 30 00:40 s1.png
+-rw-r--r--. 1 null null 26076 Nov 30 01:02 s2.png
+-rw-r--r--. 1 null null 42784 Nov 30 01:18 s3.png
+-rw-r--r--. 1 null null 42735 Nov 30 01:12 s4.png`
+  ],
+)
+#showybox(
+  frame: (
+    border-color: red.darken(50%),
+    title-color: red.lighten(60%),
+    body-color: red.lighten(80%)
+  ),
+  title-style: (
+    color: black,
+    weight: "regular",
+    align: center
+  ),
+  shadow: (
+    offset: 3pt,
+  ),
+  title: "Red-ish showybox with separated sections!",
+  lorem(20),
+  lorem(12)
+)
+
 Call me Ishmael. Some years ago --- never mind how long precisely ---
 having little or no money in my purse, and nothing particular to
 interest me on shore, I thought I would sail about a little and see

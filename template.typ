@@ -4,6 +4,9 @@
 #let normal-size = 10pt
 #let large-size = 12pt
 
+#import "term.typ": term
+#import "@preview/showybox:2.0.1": showybox
+
 // This function gets your whole document as its `body` and formats
 // it as an article in the style of the American Mathematical Society.
 #let ams-article(
