@@ -184,6 +184,9 @@
     text(size: footnote-size, author-string)
   }))
 
+  pagebreak()
+  outline()
+
   // Configure paragraph properties.
   set par(first-line-indent: 1.2em, justify: true, leading: 0.58em)
   show par: set block(spacing: 0.58em)
@@ -198,8 +201,10 @@
   }
 
   // Display the article's contents.
-  v(29pt, weak: true)
+  //v(29pt, weak: true)
+  pagebreak()
   body
+  pagebreak()
 
   // Display the bibliography, if any is given.
   if bibliography-file != none {
