@@ -1,6 +1,6 @@
 #import "template.typ": *
 #show: ams-article.with(
-  title: [Jif],
+  title: [JIF - Roboter & Controller GUI],
   authors: (
     (
       name: "Jonas Nicklas",
