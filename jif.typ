@@ -30,6 +30,8 @@ Podman ist unser Container Manager. Jetzt fragt man sich, warum nicht Docker? Hi
 - Sogenannte 'Pods', die es ermöglichen mehrere Container zu gruppieren und zu Verwalten
   - Daher ist es auch möglich in diesem Fall eine Robotersimulation und einen Client-Container in ein privates Netzwerk zu packen und eine ungehinderte Simulation bzw. Testphase ablaufen zu lassen.
 
+- Mir kommt das Containerstand speichern sehr simpel vor. Dies ist für später häufiger notwendig.
+
 \
  Außerdem hab ich mehrere Probleme mit Docker gehabt und mich deshalb dazu entschieden mal etwas anderes zu probieren.
 
@@ -61,6 +63,77 @@ podman run -it \
     --mount type=bind,source=${HOME}/.config/pulse/cookie,target=/run/pulse/cookie \
     --mount type=bind,source=${HOME}/.local/share/fonts,target=/usr/share/fonts,readonly \
     --mount type=bind,source=/usr/share/fonts,target=/root/.local/share/fonts \
-    # ...
+    # Das ist n bissel komisch eingerückt ...
 
 ```]
+
+#pagebreak()
+
+== Synchronisierte Ordner
+Das Folgende ist nötig, da sonst die Konfigurationen und Änderungen verloren gehen würden. Im Grunde Mounten wir nur Konfig Dateien und den Workspace um keinen Datenverlust zu haben und damit unsere Daten nicht davon abhängig sid, ob der Container noch exestiert oder nicht.
+
+#sc[```bash
+# ...
+    --mount type=bind,source=${HOME}/Dokumente/Docker/ros2-humble/workspace,target=/root/workspace\
+    --mount type=bind,source=${HOME}/Dokumente/Docker/ros2-humble/shared,target=/root/shared\
+    --mount type=bind,source=${HOME}/Dokumente/Docker/ros2-humble/.bashrc,target=/root/.bashrc \
+    --mount type=bind,source=${HOME}/Dokumente/Docker/ros2-humble/.config,target=/root/.config \
+# ...
+```]
+
+== Containerstände Zwischenspeichern
+
+#term(
+    ps1: [`$`], input:[podman export {ContainerName} -o {Dateiname}.tar],
+    output:[Dieser Befehl speichert den momentanen Containerzustand in einer tar Datei])
+Der Containerzustand ist jetzt in einer Datei gespeichert, jedoch ist es so nicht so simpel einen neuen Container mit `podman run` zu starten.
+Daher müssen wir nun den Containerzustand als eigene Vorlage für einen neuen Container speichern.
+#term(ps1: [`$`], input:[podman import {DateiName(Unsere tar)} {template-name}],
+    output:[Dieser Befehl sorgt dafür, dass der Container der Datei als template genommen werden kann und daher Dinge wie `podman run {template-name}` möglich sind])
+
+#pagebreak()
+== Gesammtergebniss
+
+#sc[```bash
+#!/bin/bash
+
+# sudo damit network-host funktioniert. Dies ist für ROS fast zwangsweise notwendig.
+sudo podman run -it \
+    --name ros2-humble-io \
+    --userns=keep-id \
+    --network=host \
+    --env DISPLAY=${DISPLAY} \
+    --env PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \
+    --env PULSE_COOKIE=/run/pulse/cookie \
+    --env QT_AUTO_SCREEN_SCALE_FACTOR=1 \
+    --env XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
+    --device /dev/dri \
+    --device /dev/input \
+    --device /dev/nvidia0 \
+    --device /dev/nvidiactl \
+    --device /dev/nvidia-modeset \
+    --device /dev/nvidia-uvm \
+    --device /dev/nvidia-uvm-tools \
+    --device /dev/bus/usb \
+    --device-cgroup-rule='c 81:* rmw' \
+    -v /dev/video0:/dev/video0 \
+    --mount type=bind,source=/sys,target=/sys \
+    --mount type=bind,source=${HOME}/Dokumente/Docker/ros2-humble/workspace,target=/root/workspace\
+    --mount type=bind,source=${HOME}/Dokumente/Docker/ros2-humble/shared,target=/root/shared\
+    --mount type=bind,source=${HOME}/Dokumente/Docker/ros2-humble/.bashrc,target=/root/.bashrc \
+    --mount type=bind,source=${HOME}/Dokumente/Docker/ros2-humble/.config,target=/root/.config \
+    --mount type=bind,source=${XDG_RUNTIME_DIR}/pipewire-0,target=${XDG_RUNTIME_DIR}/pipewire-0 \
+    --mount type=bind,source=$XAUTHORITY,target=/tmp/.host_Xauthority,readonly \
+    --mount type=bind,source=/etc/localtime,target=/etc/localtime,readonly \
+    --mount type=bind,source=/tmp/.X11-unix,target=/tmp/.X11-unix \
+    --mount type=bind,source=${XDG_RUNTIME_DIR}/pulse/native,target=${XDG_RUNTIME_DIR}/pulse/native \
+    --mount type=bind,source=${HOME}/.config/pulse/cookie,target=/run/pulse/cookie \
+    --mount type=bind,source=${HOME}/.local/share/fonts,target=/usr/share/fonts,readonly \
+    --mount type=bind,source=/usr/share/fonts,target=/root/.local/share/fonts \
+    --rm \
+    --workdir /root/workspace \
+    ros2-humble-io \
+    /bin/bash
+
+```]
+Das -it am Anfang steht für interactive Terminal. Dadurch kriegen wir eine SSH artige Shell die /bin/bash (Das man Ende Steht), also ganz normales Bash, öffnet. --workdir bestimmt, in welchem Ornder unser Terminal gestartet wird. Dies ist aus Praxisgründen unser Workspace. --rm sorgt dafür, dass der Container gelöscht wird, wenn er beendet wird. Dies ist kein Problem da wir alle wichtigen Daten an user reelles System gemountet haben.
