@@ -16,6 +16,17 @@
   bibliography-file: "refs.bib",
 )
 
+#sc[```java
+public class MyFunkyFlass {
+
+  public static void main(String[] args) {
+    System.out.println("Hello Illian")
+  }
+
+}
+
+```]
+
 #term(
   ps1: [`$`],
   input: [`ls -la`],

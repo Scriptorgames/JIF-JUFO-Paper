@@ -6,6 +6,24 @@
 
 #import "term.typ": term
 #import "@preview/showybox:2.0.1": showybox
+#import "@preview/codelst:2.0.0": sourcecode
+
+#let sc = sourcecode.with(
+    numbers-style: (lno) => text(
+        size: 10pt,
+        font: "Times New Roman",
+        fill: rgb(0,0,0),
+        str(lno)
+    ),
+    frame: block.with(
+        stroke: 1pt + rgb("#a2aabc"),
+        radius: 2pt,
+        inset: (x: 10pt, y: 5pt),
+        fill: rgb("DBDBDB")
+    )
+
+)
+
 
 // This function gets your whole document as its `body` and formats
 // it as an article in the style of the American Mathematical Society.
@@ -110,14 +128,14 @@
       set align(center)
       set text(size: normal-size)
       smallcaps[
-        #v(15pt, weak: true)
+        #v(30pt, weak: true)
         #number
         #it.body
         #v(normal-size, weak: true)
       ]
       counter(figure.where(kind: "theorem")).update(0)
     } else {
-      v(11pt, weak: true)
+      v(20pt, weak: true)
       number
       let styled = if it.level == 2 { strong } else { emph }
       styled(it.body + [. ])
