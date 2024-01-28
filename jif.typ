@@ -137,3 +137,74 @@ sudo podman run -it \
 
 ```]
 Das -it am Anfang steht für interactive Terminal. Dadurch kriegen wir eine SSH artige Shell die /bin/bash (Das man Ende Steht), also ganz normales Bash, öffnet. --workdir bestimmt, in welchem Ornder unser Terminal gestartet wird. Dies ist aus Praxisgründen unser Workspace. --rm sorgt dafür, dass der Container gelöscht wird, wenn er beendet wird. Dies ist kein Problem da wir alle wichtigen Daten an user reelles System gemountet haben.
+
+#pagebreak()
+
+= Kamera publisher
+Damit der Fahrer des Roboters auch etwas sieht muss das Kamerabild irgendwie übertragen werden. Dies machen wir über den ROS2 image transport. Das Kamera Bild fangen wir mit OpenCV ab.
+
+#sc[```cpp
+// Ein Haufen imports
+
+using namespace std::chrono_literals;
+
+class MinimalImagePublisher : public rclcpp::Node {
+public:
+  // Der Konstruktor
+
+private:
+  //mehrere Funktionen
+};
+
+int main(int argc, char *argv[]) {
+  rclcpp::init(argc, argv);
+  // erstelle ROS Node
+  auto node = std::make_shared<MinimalImagePublisher>();
+  // ausführen der Ros calls bis zum Absturz oder Ctrl-C
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+  return 0;
+}
+```]
+Die main funktion initialisiert zuerst ROS2 und erstellt dann eine ROS2 Node mit dem MinimalImagePublisher. Dann wird der ROS Cyclus gestartet. Es wird die timer_callback Funktion in einem Loop ausgeführt, bist Ctrl-C gedrückt wird. Der Delay zwischen den Loops ist in timer\_ definiert.
+#v(12pt)
+\
+*Der Konstruktor:*
+#sc[```cpp
+  MinimalImagePublisher() : Node("opencv_image_publisher"), count_(0) {
+    publisher_ =
+        this->create_publisher<sensor_msgs::msg::Image>("campub", 10);
+    timer_ = this->create_wall_timer(
+        500ms, std::bind(&MinimalImagePublisher::timer_callback, this));
+  }
+```]
+Im Konstruktor wird die publisher node definiert. Diese sendet eine image sensor message. Der timer bestimmt den delay zwischen den loops.
+
+#pagebreak()
+
+*Die Funktion*
+#sc[```cpp
+
+  void timer_callback() {
+    cv::Mat image;
+    cv::VideoCapture cap(0);
+    if (!cap.isOpened()){
+      std::cout << "cannot open camera";
+      return;
+    }
+    cap >> image;
+
+    msg_ = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image)
+              .toImageMsg();
+    publisher_->publish(*msg_.get());
+    RCLCPP_INFO(this->get_logger(), "Frame %ld published", count_);
+    count_++;
+  }
+  rclcpp::TimerBase::SharedPtr timer_;
+  sensor_msgs::msg::Image::SharedPtr msg_;
+  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher_;
+  size_t count_;
+```]
+Zu Beginn wird eine Matrix erstellt die image heißt. Diese ist einfach nur eine Rohdarstellung der Bilddaten. Dann wird ein VideoCapture namens cap erstellt. Die `0` bei `cap(0)` bestimmt die ausgewählte Kammera tendentiell könnte man da eine andere Nummer eingeben und es würde eine andere Kamera ausgewählt werden, falls es eine auf dieser Position gibt. Die Erfolgreiche erstellung des Video captures wird daraufhin in Z. 4ff. überprüft.
+
+In Z. 8 setzen wir image auf das Bild, das cap momentan Besitzt, also das, das die Kamera momentan aufnimmt. Daraufhin wird eine Image message erstellt, die versendet werden kann. Dazu müssen wir von dem OpenCV Matrix Format erst einmal in das ROS kompatibele Image Format konvertieren. Dann publishen wir das Image und senden es in das Netzwerk. Dann geben wir noch aus, wieviele Frames bereits geschickt wurden und erhöhen den counter für die bereits geschickten Frames.
