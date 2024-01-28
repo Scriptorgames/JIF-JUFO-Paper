@@ -19,9 +19,7 @@
 
 #show raw: set text(font: font)
 
-#let button(
-  color: none,
-) = {
+#let button(color: none) = {
   return box(
     width: button_size,
     height: button_size,
@@ -34,9 +32,7 @@
   return block(
     width: 100%,
     inset: inset_size,
-    radius: (
-      top: radius_size,
-    ),
+    radius: (top: radius_size),
     fill: toolbar_bg_color,
     stroke: stroke_color,
     stack(
@@ -45,48 +41,28 @@
       button(color: button_red_color),
       button(color: button_orange_color),
       button(color: button_green_color),
-    )
+    ),
   )
 }
 
-#let main(
-  ps1: [],
-  input: [],
-  output: [],
-) = {
+#let main(ps1: [], input: [], output: []) = {
   return block(
     width: 100%,
     inset: inset_size,
-    radius: (
-      bottom: radius_size,
-    ),
+    radius: (bottom: radius_size),
     fill: main_bg_color,
     stroke: stroke_color,
     [
       #ps1 #input \
       #output
-    ]
+    ],
   )
 }
 
-#let term(
-  ps1: [],
-  input: [],
-  output: [],
-) = {
-  return align(
-    left, 
-    box(
-      width: 300pt,
-      stack(
-        dir: ttb,
-        align(left, toolbar()),
-        main(
-          ps1: ps1,
-          input: input,
-          output: output,
-        ),
-      )
-    )
-  )
+#let term(ps1: [], input: [], output: []) = {
+  return align(left, box(width: 300pt, stack(
+    dir: ttb,
+    align(left, toolbar()),
+    main(ps1: ps1, input: input, output: output),
+  )))
 }
