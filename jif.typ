@@ -208,3 +208,5 @@ Im Konstruktor wird die publisher node definiert. Diese sendet eine image sensor
 Zu Beginn wird eine Matrix erstellt die image heißt. Diese ist einfach nur eine Rohdarstellung der Bilddaten. Dann wird ein VideoCapture namens cap erstellt. Die `0` bei `cap(0)` bestimmt die ausgewählte Kammera tendentiell könnte man da eine andere Nummer eingeben und es würde eine andere Kamera ausgewählt werden, falls es eine auf dieser Position gibt. Die Erfolgreiche erstellung des Video captures wird daraufhin in Z. 4ff. überprüft.
 
 In Z. 8 setzen wir image auf das Bild, das cap momentan Besitzt, also das, das die Kamera momentan aufnimmt. Daraufhin wird eine Image message erstellt, die versendet werden kann. Dazu müssen wir von dem OpenCV Matrix Format erst einmal in das ROS kompatibele Image Format konvertieren. Dann publishen wir das Image und senden es in das Netzwerk. Dann geben wir noch aus, wieviele Frames bereits geschickt wurden und erhöhen den counter für die bereits geschickten Frames.
+
+Die letzten vier Zeilen deklarieren den Typ der öffentlich verfügbaren Variablen, die oben im Konstruktor gesetzt werden.
