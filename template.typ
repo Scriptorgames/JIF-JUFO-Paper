@@ -9,19 +9,13 @@
 #import "@preview/codelst:2.0.0": sourcecode
 
 #let sc = sourcecode.with(
-    numbers-style: (lno) => text(
-        size: 10pt,
-        font: "Times New Roman",
-        fill: rgb(0,0,0),
-        str(lno)
-    ),
-    frame: block.with(
-        stroke: 1pt + rgb("#a2aabc"),
-        radius: 2pt,
-        inset: (x: 10pt, y: 5pt),
-        fill: rgb("DBDBDB")
-    )
-
+  numbers-style: (lno) => text(size: 10pt, font: "Times New Roman", fill: rgb(0, 0, 0), str(lno)),
+  frame: block.with(
+    stroke: 1pt + rgb("#a2aabc"),
+    radius: 2pt,
+    inset: (x: 10pt, y: 5pt),
+    fill: rgb("DBDBDB"),
+  ),
 )
 
 
@@ -30,22 +24,17 @@
 #let ams-article(
   // The article's title.
   title: [Paper title],
-
   // An array of authors. For each author you can specify a name,
   // department, organization, location, and email. Everything but
   // but the name is optional.
   authors: (),
-
   // Your article's abstract. Can be omitted if you don't have one.
   abstract: none,
-
   // The article's paper size. Also affects the margins.
   paper-size: "a4",
-
   // The path to a bibliography file if you want to cite some external
   // works.
   bibliography-file: none,
-
   // The document's content.
   body,
 ) = {
@@ -57,13 +46,13 @@
   } else {
     names.join(", ", last: ", und ")
   }
-
+   
   // Set document metadata.
   set document(title: title, author: names)
-
+   
   // Set the body font. AMS uses the LaTeX font.
   set text(size: normal-size, font: "Times New Roman")
-
+   
   // Configure the page.
   set page(
     paper: paper-size,
@@ -76,32 +65,25 @@
         bottom: (94pt / 279mm) * 100%,
       )
     } else {
-      (
-        top: 2.5cm,
-        left: 2.5cm,
-        right: 2.5cm,
-        bottom: 2cm
-      )
+      (top: 2.5cm, left: 2.5cm, right: 2.5cm, bottom: 2cm)
     },
-
     // The page header should show the page number and list of
     // authors, except on the first page. The page number is on
     // the left for even pages and on the right for odd pages.
     header-ascent: 14pt,
-    header: locate(loc => {
-      let i = counter(page).at(loc).first()
-      if i == 1 { return }
-      set text(size: script-size)
-      grid(
-        columns: (6em, 1fr, 6em),
-        if calc.even(i) [#i],
-        align(center, upper(
-          if calc.odd(i) { title } else { author-string }
-        )),
-        if calc.odd(i) { align(right)[#i] }
-      )
-    }),
-
+    header: locate(
+      loc => {
+        let i = counter(page).at(loc).first()
+        if i == 1 { return }
+        set text(size: script-size)
+        grid(
+          columns: (6em, 1fr, 6em),
+          if calc.even(i) [#i],
+          align(center, upper(if calc.odd(i) { title } else { author-string })),
+          if calc.odd(i) { align(right)[#i] },
+        )
+      },
+    ),
     // On the first page, the footer should contain the page number.
     footer-descent: 12pt,
     footer: locate(loc => {
@@ -109,9 +91,9 @@
       if i == 1 {
         align(center, text(size: script-size, [#i]))
       }
-    })
+    }),
   )
-
+   
   // Configure headings.
   set heading(numbering: "1.")
   show heading: it => {
@@ -120,7 +102,7 @@
       counter(heading).display(it.numbering)
       h(7pt, weak: true)
     }
-
+     
     // Level 1 headings are centered and smallcaps.
     // The other ones are run-in.
     set text(size: normal-size, weight: 400)
@@ -142,28 +124,28 @@
       h(7pt, weak: true)
     }
   }
-
+   
   // Configure lists and links.
   set list(indent: 24pt, body-indent: 5pt)
   set enum(indent: 24pt, body-indent: 5pt)
   show link: set text(font: "New Computer Modern Mono")
-
+   
   // Configure equations.
   show math.equation: set block(below: 8pt, above: 9pt)
   show math.equation: set text(weight: 400)
-
+   
   // Configure citation and bibliography styles.
   set bibliography(style: "springer-mathphys", title: [References])
-
+   
   show figure: it => {
     show: pad.with(x: 23pt)
     set align(center)
-
+     
     v(12.5pt, weak: true)
-
+     
     // Display the figure's body.
     it.body
-
+     
     // Display the figure's caption.
     if it.has("caption") {
       // Gap defaults to 17pt.
@@ -176,10 +158,10 @@
       [. ]
       it.caption.body
     }
-
+     
     v(15pt, weak: true)
   }
-
+   
   // Theorems.
   show figure.where(kind: "theorem"): it => block(above: 11.5pt, below: 11.5pt, {
     strong({
@@ -193,7 +175,7 @@
     })
     emph(it.body)
   })
-
+   
   // Display the title and authors.
   v(35pt, weak: true)
   align(center, upper({
@@ -201,14 +183,14 @@
     v(25pt, weak: true)
     text(size: footnote-size, author-string)
   }))
-
+   
   pagebreak()
   outline()
-
+   
   // Configure paragraph properties.
   set par(first-line-indent: 1.2em, justify: true, leading: 1.5em)
   show par: set block(spacing: 0.58em)
-
+   
   // Display the abstract
   if abstract != none {
     v(20pt, weak: true)
@@ -217,44 +199,44 @@
     smallcaps[Abstract. ]
     abstract
   }
-
+   
   // Display the article's contents.
   //v(29pt, weak: true)
   pagebreak()
   body
   pagebreak()
-
+   
   // Display the bibliography, if any is given.
   if bibliography-file != none {
     show bibliography: set text(8.5pt)
     show bibliography: pad.with(x: 0.5pt)
     bibliography(bibliography-file)
   }
-
+   
   // The thing ends with details about the authors.
   show: pad.with(x: 11.5pt)
   set par(first-line-indent: 0pt)
   set text(7.97224pt)
-
+   
   for author in authors {
     let keys = ("department", "organization", "location")
-
+     
     let dept-str = keys
-      .filter(key => key in author)
-      .map(key => author.at(key))
-      .join(", ")
-
+    .filter(key => key in author)
+    .map(key => author.at(key))
+    .join(", ")
+     
     smallcaps(dept-str)
     linebreak()
-
+     
     if "email" in author [
       _Email address:_ #link("mailto:" + author.email) \
     ]
-
+     
     if "url" in author [
       _URL:_ #link(author.url)
     ]
-
+     
     v(12pt, weak: true)
   }
 }
@@ -264,7 +246,7 @@
   body,
   kind: "theorem",
   supplement: [Theorem],
-  numbering: if numbered { "1" },
+  numbering: if numbered { "1" },
 )
 
 // And a function for a proof.
