@@ -27,7 +27,6 @@ public class MyFunkyFlass {
 
 ```]
 
-
 #term(
   ps1: [`$`],
   input: [`ls -la`],

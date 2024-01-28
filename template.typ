@@ -128,14 +128,14 @@
       set align(center)
       set text(size: normal-size)
       smallcaps[
-        #v(15pt, weak: true)
+        #v(30pt, weak: true)
         #number
         #it.body
         #v(normal-size, weak: true)
       ]
       counter(figure.where(kind: "theorem")).update(0)
     } else {
-      v(11pt, weak: true)
+      v(20pt, weak: true)
       number
       let styled = if it.level == 2 { strong } else { emph }
       styled(it.body + [. ])
