@@ -206,7 +206,7 @@
   outline()
 
   // Configure paragraph properties.
-  set par(first-line-indent: 1.2em, justify: true, leading: 0.58em)
+  set par(first-line-indent: 1.2em, justify: true, leading: 1.5em)
   show par: set block(spacing: 0.58em)
 
   // Display the abstract
