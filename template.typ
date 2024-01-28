@@ -51,7 +51,7 @@
   set document(title: title, author: names)
    
   // Set the body font. AMS uses the LaTeX font.
-  set text(size: normal-size, font: "Times New Roman")
+  set text(size: normal-size, font: "Times New Roman", lang: "DE")
    
   // Configure the page.
   set page(
