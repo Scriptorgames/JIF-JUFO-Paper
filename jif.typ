@@ -168,6 +168,11 @@ public:
 
 private:
   //mehrere Funktionen
+ rclcpp::TimerBase::SharedPtr timer_;
+ sensor_msgs::msg::Image::SharedPtr msg_;
+ rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher_;
+ cv::VideoCapture cap;
+ size_t count_;
 };
 
 int main(int argc, char *argv[]) {
@@ -186,11 +191,15 @@ Die Main Funktion initialisiert zuerst ROS2 und erstellt dann eine ROS2 Node mit
 *Der Konstruktor:*
 #sc[```cpp
   MinimalImagePublisher() : Node("opencv_image_publisher"), count_(0) {
-    publisher_ =
-        this->create_publisher<sensor_msgs::msg::Image>("campub", 10);
+    publisher_ = this->create_publisher<sensor_msgs::msg::Image>("campub", 10);
+    cap.open(0);
+    if (!cap.isOpened()){
+      std::cout << "cannot open camera";
+      return;
+    }
     timer_ = this->create_wall_timer(
         500ms, std::bind(&MinimalImagePublisher::timer_callback, this));
-  }
+ }
 ```]
 Im Konstruktor wird die publisher node definiert. Diese sendet eine Imagesensor-Message. Der timer bestimmt den delay zwischen den loops.
 
@@ -201,23 +210,15 @@ Im Konstruktor wird die publisher node definiert. Diese sendet eine Imagesensor-
 
   void timer_callback() {
     cv::Mat image;
-    cv::VideoCapture cap(0);
-    if (!cap.isOpened()){
-      std::cout << "cannot open camera";
-      return;
-    }
     cap >> image;
 
     msg_ = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image)
-              .toImageMsg();
+                .toImageMsg();
     publisher_->publish(*msg_.get());
     RCLCPP_INFO(this->get_logger(), "Frame %ld published", count_);
     count_++;
-  }
-  rclcpp::TimerBase::SharedPtr timer_;
-  sensor_msgs::msg::Image::SharedPtr msg_;
-  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher_;
-  size_t count_;
+ }
+ 
 ```]
 Zu Beginn wird eine Matrix erstellt, die Image heißt. Diese ist einfach nur eine Rohdarstellung der Bilddaten. Dann wird ein VideoCapture namens cap erstellt. Die `0` bei `cap(0)` bestimmt die ausgewählte Kamera. Tendenziell könnte man da eine andere Nummer eingeben und es würde eine andere Kamera ausgewählt werden, falls es eine auf dieser Position gibt. Die erfolgreiche Erstellung des Video captures wird daraufhin in Z. 4ff. Überprüft.
 
