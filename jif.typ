@@ -5,6 +5,32 @@
   (name: "Felix Schreiber"),
 ), abstract: {}, bibliography-file: "refs.bib")
 
+= Einleitung
+
+Roboter, Software; Technik, Informatik: Zwei spannende Themen, die, nebenbei
+bemerkt, extrem gut zusammenpassen. Genau das ist, was wir uns gedacht haben,
+oder zumindest so ähnlich, als wir beschlossen haben, uns bei dem diesjährigen
+Jugend Forscht Wettbewerb anzumelden. Wir, das sind Jonas Nicklas, Ilian
+Odenbach und Felix Schreiber, arbeiten schon seit einigen Jahren immer wieder in
+Wahlkursen und jetzt auch im P-Seminar an Robotern, hatten 2023 sogar einen
+kleinen Auftritt auf der Consumenta-Messe, in Zusammenarbeit mit Schülern
+anderer Schulen, die auch an dem Projekt teilgenommen haben. Da dieses Projekt
+vorbei ist, haben wir uns überlegt, im Alleingang ein Robotik-Projekt in Angriff
+zu nehmen.\
+\
+Das Projekt ist in drei Teile aufgeteilt: Die Hardware, also den Roboter selbst
+hat Jonas gebaut, die Software, die den Roboter erst zum Leben erweckt hat Ilian
+entwickelt und die Benutzeroberfläche zum Steuern des Roboters stammt aus der
+Feder von Felix. Natürlich ist das keine Einteilung mit festen Grenzen, sodass
+sich auch hin und wieder gegenseitig geholfen werden konnte, wenn man mal wieder
+spontan vergessen hat wie ROS funktioniert oder ähnliche Probleme...\
+\
+Die Arbeit ist folgendermaßen gegliedert: Zunächst wird die Hardware, dann die
+Software vom Roboter und zuletzt das GUI behandelt. Zuletzt folgt noch ein
+Fazit.
+
+#pagebreak()
+
 = Roboter
 == Fahrgestell und Karosserie 
 Das Fahrgestell ist nicht von uns designt worden, eben so wenig wie der
@@ -315,18 +341,19 @@ Menü-Leiste, ansonsten: leer.
 
 == Implementations-Überblick
 
-Die Software selbst ist in C++ programmiert und basiert auf vier grundlegenden "Säulen":
-OpenGL @opengl bzw. GLEW @glew, GLFW @glfw, ImGui @imgui und ROS2 @ros2
-(RCLCpp), Version "Humble". Hierbei ist GLFW für die Fensterverwaltung und
-Context-Bereitstellung zuständig, OpenGL übernimmt das Graphic-Backend, ImGui
-generiert das GUI, und ROS2 ist, einfach gesagt, ROS2. Um das Arbeiten mit den
-unterschiedlichen Libraries einfacher zu gestalten habe ich einige
-Wrapper-Klassen und Funktionen geschrieben, die die Funktionalität der Libraries
-etwas abstrahieren. Dazu zählt zum Beispiel die Window-Klasse, die die
-Funktionen von GLFW (ursprünglich für C gemacht) nimmt und in eine Klasse
-verpackt, mit deren Hilfe man relativ einfach (dafür umsomehr eingeschränkt) ein
-Fenster erstellen und verwalten kann.
-
+Die Software selbst ist in C++ für Linux programmiert; als Entwicklungsumgebung
+dient hierbei Microsoft Visual Studio Code mit WSL 2 unter Windows. Das GUI
+basiert auf vier grundlegenden "Säulen": OpenGL @opengl bzw. GLEW @glew, GLFW
+@glfw, ImGui @imgui und ROS2 @ros2 (RCLCpp), Version "Humble". Hierbei ist GLFW
+für die Fensterverwaltung und Context-Bereitstellung zuständig, OpenGL übernimmt
+das Graphic-Backend, ImGui generiert das GUI, und ROS2 ist, einfach gesagt,
+ROS2. Um das Arbeiten mit den unterschiedlichen Libraries einfacher zu gestalten
+habe ich einige Wrapper-Klassen und Funktionen geschrieben, die die
+Funktionalität der Libraries etwas abstrahieren. Dazu zählt zum Beispiel die
+Window-Klasse, die die Funktionen von GLFW (ursprünglich für C gemacht) nimmt
+und in eine Klasse verpackt, mit deren Hilfe man relativ einfach (dafür umsomehr
+eingeschränkt) ein Fenster erstellen und verwalten kann.\
+\
 Ein zusätzliches Tool, dass ich selbst geschrieben habe ist eine Art
 Resourcen-Management, das die verschiedenen Resourcen der App, befindlich im "res"
 Ordner, installiert im Hauptverzeichnis der App, verwaltet, einliest und so
@@ -399,15 +426,15 @@ DockSpace ID=0x8B93E3BD Window=0xA787BDB4 Pos=0,19 Size=800,581 CentralNode=1
 ```]
 
 Diese Datei wird von ImGui generiert und gespeichert. Das heißt: wenn man die
-Views verschiebt/ihre Größe verändert, dann werden die Änderungen in der _imgui.ini_ gespiegelt.
-
+Views verschiebt/ihre Größe verändert, dann werden die Änderungen in der _imgui.ini_ gespiegelt.\
+\
 Das Resourcen-Management erlaubt außerdem auch das definieren eigener
 View-Types, also was für Views der Nutzer erstellen kann, neuen Menüs in der
 Menü-Leiste, verschiedene Standartlayouts die geladen werden könenn und so
 weiter. Später kommen auch noch Resourcen-JSONs für Bilder, Schriftarten,
 Textdateien und noch einiges mehr dazu, um die Entwicklung noch weiter zu
-beschleunigen und zu vereinfachen.
-
+beschleunigen und zu vereinfachen.\
+\
 Um die Arbeit an dieser Stelle nicht noch weiter unnötig in die Länge ziehen zu
 müssen wird hier kein Source-Code eingefügt, da der Code an sich zu komplex,
 viel zu groß und noch mehr viel zu durcheinander ist, um ihn hier sinnvoll und
@@ -452,10 +479,8 @@ buy me a beer in return.
 Doch was kann man mit der Software bis jetzt als Nutzer alles machen? Die
 Palette an Funktionen wächst zwar ständig weiter, aber zum Zeitpunkt dieser
 Arbeit sind ein paar grundlegende Dinge möglich:
-
 - Das Laden/Speichern von Layouts und
 - Das Hinzufügen/Entfernen/Verwalten von Views
-
 So kann man zum Beispiel schon eine kleine App zusammenbasteln:
 
 #image("pictures/gui3.png")
@@ -465,8 +490,8 @@ ein Fenster, dass einen durch den Prozess begleitet: Zunächst gibt man dem neue
 View einen Namen, zum Beispiel "Test". Dann wählt man im nächsten Dialog aus
 einem Dropdown-Menü den View-Type aus, in diesem Beispiel "image". Unter dem
 Dropdown tauchen dann weitere Felder auf, die man je nach Typ ausfüllt, bei "image"
-zum Beispiel den ROS-Topic, aus dem das Bild gezogen werden soll.
-
+zum Beispiel den ROS-Topic, aus dem das Bild gezogen werden soll.\
+\
 Um ein View zu entfernen/wieder sichtbar zu machen (man kann Views minimieren,
 wenn man auf das X klickt), geht man auf "View => Manager". Darauf öffnet sich
 ein View-Manager Fenster, in dem man die einzelnen Views (de-)aktivieren oder
@@ -479,4 +504,25 @@ gepackt, die eigentlich nur eine ganz normale _.zip_ Datei ist, aber der Name
 klingt cooler... Jedenfalls kann diese mit anderen ausgetauscht, geteilt,
 verschoben, etc. werden, wenn man sie über "Layout => Load" wieder lädt, wird
 das Layout und die ImGui Konfiguration wiederhergestellt.
+
+#pagebreak()
+
+= Fazit
+
+Alles in allem war das Projekt mehr oder minder erfolgreich: wir haben einen
+funktionierenden, fahrenden Roboter und Software, die für noch folgende Projekte
+weiter verwendet werden kann. Hard- und Software hat noch Ausbaubedarf, vor
+allem die Software, was nicht wenig daran liegt, dass der Fokus mehr auf die "universalität"
+lag als auf einem vollständigen Paket. Außerdem hat Programmieren die
+unangenehme Eigenschaft, dass man nach einem Projekt meistens mehr Probleme hat
+als davor: warum funktioniert der Code urplötzlich nicht mehr, obwohl der
+Rechner nur über Nacht aus war; warum macht der Compiler einfach seinen Job
+nicht richtig; warum haben mich meine Freunde und Familie verlassen, ich war
+doch nur zwei Monate ununterbrochen im Keller... Naja, jedenfalls gibt es noch
+viel zu tun. Aber: wir haben viel gelernt auf unserem Weg, und damit sind wir
+besser auf das nächste große Vorhaben oder auf nächstes Jahr Jugend Forscht
+vorbereitet als bei diesem Projekt.\
+\
+Den Source-Code der schriftliche Arbeit finden Sie #link("https://github.com/Scriptorgames/JIF-JUFO-Paper")[*_hier_*] in
+unserer GitHub-Organization. Bei Fragen können Sie sich an #link("mailto:f.schreiber.2006@proton.me")[*_diese Mail-Addresse_*] wenden.
 
