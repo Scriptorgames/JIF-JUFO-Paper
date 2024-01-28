@@ -16,27 +16,28 @@
   bibliography-file: "refs.bib",
 )
 
+
 = Containerisierung des ROS2 environments für Entwicklung auf einem nicht-Ubuntu Gerät
 
-Zum aufsetzen eines simplen Containers für ROS2 mussten wir uns zuerst mehrere essentielle Fragen stellen: Welche Ordner sollten dauerhaft bestehen bleiben? Wollen wir graphische Oberflächen unterstützen? Welche Software wollen wir nutzen? Wie speichern wir unseren Containerstand zwischen?
+Zum Aufsetzen eines simplen Containers für ROS2 mussten wir uns zuerst mehrere essenzielle Fragen stellen: Welche Ordner sollten dauerhaft bestehen bleiben? Wollen wir grafische Oberflächen unterstützen? Welche Software wollen wir nutzen? Wie speichern wir unseren Containerstand zwischen?
 
 == Podman
-Podman ist unser Container Manager. Jetzt fragt man sich, warum nicht Docker? Hier eine kurze Übersicht warum ich mich für Podman entschieden habe.
+Podman ist unser Container Manager. Jetzt fragt man sich, warum nicht Docker? Hier eine kurze Übersicht, warum ich mich für Podman entschieden habe.
 
-- Kein Daemon, daher keine verpflichtenden Admin Rechte
-  - Daher keine Nutzerrollen nötig um einen Container ohne sudo rechte zu starten
+- Kein Daemon, daher keine verpflichtenden Admin-Rechte
+  - Daher keine Nutzerrollen nötig, um einen Container ohne sudo rechte zu starten
 
 
 - Sogenannte 'Pods', die es ermöglichen mehrere Container zu gruppieren und zu Verwalten
-  - Daher ist es auch möglich in diesem Fall eine Robotersimulation und einen Client-Container in ein privates Netzwerk zu packen und eine ungehinderte Simulation bzw. Testphase ablaufen zu lassen.
+  - Daher ist es auch möglich, in diesem Fall eine Robotersimulation und einen Client-Container in ein privates Netzwerk zu packen und eine ungehinderte Simulation bzw. Testphase ablaufen zu lassen.
 
 - Mir kommt das Containerstand speichern sehr simpel vor. Dies ist für später häufiger notwendig.
 
 \
- Außerdem hab ich mehrere Probleme mit Docker gehabt und mich deshalb dazu entschieden mal etwas anderes zu probieren.
+ Außerdem habe ich mehrere Probleme mit Docker gehabt und mich deshalb dazu entschieden, mal etwas anderes zu probieren.
 
 == Graphische Oberflächen
-Ich dachte mir zu beginn, dass ein reiner Developnment-Container keine GUIS bracht, da es ja genug Terminal Text-Editioren gibt. Nach jedoch etwas Überlegung sollte klar sein, dass ein GUI zur Kontrolle des Roboters fast unverzichtbar ist (Beispielsweise für die Kamera).
+Ich dachte mir zu Beginn, dass ein reiner Development-Container keine GUIs braucht, da es ja genug Terminal Text-Editioren gibt. Nach jedoch etwas Überlegung sollte klar sein, dass ein GUI zur Kontrolle des Roboters fast unverzichtbar ist (beispielsweise für die Kamera).
 
 #sc[```bash
 podman run -it \
@@ -70,7 +71,7 @@ podman run -it \
 #pagebreak()
 
 == Synchronisierte Ordner
-Das Folgende ist nötig, da sonst die Konfigurationen und Änderungen verloren gehen würden. Im Grunde Mounten wir nur Konfig Dateien und den Workspace um keinen Datenverlust zu haben und damit unsere Daten nicht davon abhängig sid, ob der Container noch exestiert oder nicht.
+Das Folgende ist nötig, da sonst die Konfigurationen und Änderungen verloren gehen würden. Im Grunde mounten wir nur Konfig Dateien und den Workspace, um keinen Datenverlust zu haben und damit unsere Daten nicht davon abhängig sind, ob der Container noch existiert oder nicht.
 
 #sc[```bash
 # ...
@@ -92,7 +93,7 @@ Daher müssen wir nun den Containerzustand als eigene Vorlage für einen neuen C
     output:[Dieser Befehl sorgt dafür, dass der Container der Datei als template genommen werden kann und daher Dinge wie `podman run {template-name}` möglich sind])
 
 #pagebreak()
-== Gesammtergebniss
+== Gesamtergebnis
 
 #sc[```bash
 #!/bin/bash
@@ -136,12 +137,12 @@ sudo podman run -it \
     /bin/bash
 
 ```]
-Das -it am Anfang steht für interactive Terminal. Dadurch kriegen wir eine SSH artige Shell die /bin/bash (Das man Ende Steht), also ganz normales Bash, öffnet. --workdir bestimmt, in welchem Ornder unser Terminal gestartet wird. Dies ist aus Praxisgründen unser Workspace. --rm sorgt dafür, dass der Container gelöscht wird, wenn er beendet wird. Dies ist kein Problem da wir alle wichtigen Daten an user reelles System gemountet haben.
+Das -it am Anfang steht für Interactive Terminal. Dadurch kriegen wir eine SSH-artige Shell, die /bin/bash (Das man Ende Steht), also ganz normales Bash, öffnet. --workdir bestimmt, in welchem Ornder unser Terminal gestartet wird. Dies ist aus Praxisgründen unser Workspace. --rm sorgt dafür, dass der Container gelöscht wird, wenn er beendet wird. Dies ist kein Problem da wir alle wichtigen Daten an unser reelles System gemountet haben.
 
 #pagebreak()
 
 = Kamera publisher
-Damit der Fahrer des Roboters auch etwas sieht muss das Kamerabild irgendwie übertragen werden. Dies machen wir über den ROS2 image transport. Das Kamera Bild fangen wir mit OpenCV ab.
+Damit der Fahrer des Roboters auch etwas sieht, muss das Kamerabild irgendwie übertragen werden. Dies machen wir über den ROS2 image transport. Das Kamerabild fangen wir mit OpenCV ab.
 
 #sc[```cpp
 // Ein Haufen imports
@@ -166,7 +167,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 ```]
-Die main funktion initialisiert zuerst ROS2 und erstellt dann eine ROS2 Node mit dem MinimalImagePublisher. Dann wird der ROS Cyclus gestartet. Es wird die timer_callback Funktion in einem Loop ausgeführt, bist Ctrl-C gedrückt wird. Der Delay zwischen den Loops ist in timer\_ definiert.
+Die Main Funktion initialisiert zuerst ROS2 und erstellt dann eine ROS2 Node mit dem MinimalImagePublisher. Dann wird der ROS Cyclus gestartet. Es wird die Timer_Callback-Funktion in einem Loop ausgeführt, bis Ctrl-C gedrückt wird. Der Delay zwischen den Loops ist in timer\_ definiert.
 #v(12pt)
 \
 *Der Konstruktor:*
@@ -178,7 +179,7 @@ Die main funktion initialisiert zuerst ROS2 und erstellt dann eine ROS2 Node mit
         500ms, std::bind(&MinimalImagePublisher::timer_callback, this));
   }
 ```]
-Im Konstruktor wird die publisher node definiert. Diese sendet eine image sensor message. Der timer bestimmt den delay zwischen den loops.
+Im Konstruktor wird die publisher node definiert. Diese sendet eine Imagesensor-Message. Der timer bestimmt den delay zwischen den loops.
 
 #pagebreak()
 
@@ -205,8 +206,8 @@ Im Konstruktor wird die publisher node definiert. Diese sendet eine image sensor
   rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher_;
   size_t count_;
 ```]
-Zu Beginn wird eine Matrix erstellt die image heißt. Diese ist einfach nur eine Rohdarstellung der Bilddaten. Dann wird ein VideoCapture namens cap erstellt. Die `0` bei `cap(0)` bestimmt die ausgewählte Kammera tendentiell könnte man da eine andere Nummer eingeben und es würde eine andere Kamera ausgewählt werden, falls es eine auf dieser Position gibt. Die Erfolgreiche erstellung des Video captures wird daraufhin in Z. 4ff. überprüft.
+Zu Beginn wird eine Matrix erstellt, die Image heißt. Diese ist einfach nur eine Rohdarstellung der Bilddaten. Dann wird ein VideoCapture namens cap erstellt. Die `0` bei `cap(0)` bestimmt die ausgewählte Kamera. Tendenziell könnte man da eine andere Nummer eingeben und es würde eine andere Kamera ausgewählt werden, falls es eine auf dieser Position gibt. Die erfolgreiche Erstellung des Video captures wird daraufhin in Z. 4ff. Überprüft.
 
-In Z. 8 setzen wir image auf das Bild, das cap momentan Besitzt, also das, das die Kamera momentan aufnimmt. Daraufhin wird eine Image message erstellt, die versendet werden kann. Dazu müssen wir von dem OpenCV Matrix Format erst einmal in das ROS kompatibele Image Format konvertieren. Dann publishen wir das Image und senden es in das Netzwerk. Dann geben wir noch aus, wieviele Frames bereits geschickt wurden und erhöhen den counter für die bereits geschickten Frames.
+In Z. 8 setzen wir Image auf das Bild, das cap momentan besitzt, also das, das die Kamera momentan aufnimmt. Daraufhin wird eine Image-Message erstellt, die versendet werden kann. Dazu müssen wir von dem OpenCV Matrix Format erst einmal in das ROS kompatible Imageformat konvertieren. Dann publishen wir das Image und senden es in das Netzwerk. Dann geben wir noch aus, wie viele Frames bereits geschickt wurden und erhöhen den Counter für die bereits geschickten Frames.
 
 Die letzten vier Zeilen deklarieren den Typ der öffentlich verfügbaren Variablen, die oben im Konstruktor gesetzt werden.
