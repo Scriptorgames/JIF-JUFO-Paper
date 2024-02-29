@@ -1,18 +1,4 @@
 #import "@preview/polylux:0.3.1": *
-#import "term.typ": term
-#import "@preview/showybox:2.0.1": showybox
-#import "@preview/codelst:2.0.0": sourcecode
-
-#let sc = sourcecode.with(
-  numbers-style: (lno) => text(size: 10pt, font: "Times New Roman", fill: rgb(0, 0, 0), str(lno)),
-  frame: block.with(
-    stroke: 1pt + rgb("#a2aabc"),
-    radius: 2pt,
-    inset: (x: 10pt, y: 5pt),
-    fill: rgb("DBDBDB"),
-  ),
-)
-
 
 #set page(paper: "presentation-16-9")
 #set text(size: 25pt)
@@ -59,4 +45,69 @@
   + Flashen
   + Starten des Micoros Agents
   + Nun sichtbar unter ros_topics cmd_velocity
+]
+#slide[
+  = 2. Containerisierung des ROS2 Environments
+  == 2.1 Podman
+  - Kein Daemon -> keine Administratorrechte nötig
+  - Keine Nutzerrollen nötig
+  - Pods zum Gruppieren von Containern und Tests
+  - Einfaches speichern des Containerstands
+  == 2.2 GUI Übertragung
+  - Env Variablen setzen, um Audio und Video zu übertragen
+  - Einhängen der Geräte in den Container
+  - Einhängen der Systemrelevanten Ordner z.B. Fonts
+]
+#slide[
+  == 2.3 Letzte Schritte
+  - Ordner die persistent sein sollten auf der echten Maschine erstellen und einhängen
+  - Container aufsetzen und Abhängigkeiten installieren
+  - Containerzustand Speichern
+]
+#slide[
+  = 3. Kamera Publisher
+  == 3.1 Grundstruktur
+  #text(size: 12pt)[
+ ```cpp
+ // Ein Haufen imports
+ using namespace std::chrono_literals;
+ class MinimalImagePublisher : public rclcpp::Node {
+ // Der Konstruktor
+ private:
+ //mehrere Funktionen
+ };
+ int main(int argc, char *argv[]) {
+ rclcpp::init(argc, argv);
+ // erstelle ROS Node
+ auto node = std::make_shared<MinimalImagePublisher>();
+ // ausführen der Ros calls bis zum Absturz oder Ctrl-C
+ rclcpp::spin(node);
+ rclcpp::shutdown();
+ return 0;
+ }
+    ```
+  ]
+]
+#slide[
+  == 3.2 Die wichtige Funktion
+  #text(size: 12pt)[
+  ```cpp
+ void timer_callback() {
+ cv::Mat image;
+ cv::VideoCapture cap(0);
+ if (!cap.isOpened()){
+ std::cout << "cannot open camera";
+ return;
+ cap >> image;
+ msg_ = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image)
+ .toImageMsg();
+ publisher_->publish(*msg_.get());
+ RCLCPP_INFO(this->get_logger(), "Frame %ld published", count_);
+ count_++;
+ }
+ rclcpp::TimerBase::SharedPtr timer_;
+ sensor_msgs::msg::Image::SharedPtr msg_;
+ rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher_;
+ size_t count_;
+  ```]
 ]
